@@ -10,7 +10,7 @@
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
-  padding: 20px 225px 10px 225px;
+  padding: 20px 0 10px 0;
 }
 
 .controls-wrapper {
@@ -19,6 +19,8 @@
   align-items: flex-end;
   justify-content: space-between;
   width: 100%;
+  max-width: 880px;
+  margin: 0 auto;
   padding: 0 40px;
   box-sizing: border-box;
 }
@@ -259,10 +261,10 @@
 }
 
 .verses {
-  line-height: 2.2;
+  line-height: 34px;
   color: #000;
   font-size: 16px;
-  text-align: justify;
+  text-align: left;
   font-family: 'Figtree', sans-serif;
 }
 
