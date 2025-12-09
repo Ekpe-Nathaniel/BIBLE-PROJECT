@@ -49,6 +49,7 @@ export class BibleViewerComponent implements OnInit {
       (data: any) => {
         this.books.set(data);
         this.loading.set(false);
+        this.loadDefaultBook();
       },
       (error) => {
         this.error.set('Failed to load books');
@@ -56,6 +57,24 @@ export class BibleViewerComponent implements OnInit {
         this.loading.set(false);
       }
     );
+  }
+
+  loadDefaultBook(): void {
+    console.log('Available books:', this.books());
+    const genesisBook = this.books().find((b) => b.name.toLowerCase().includes('genesis') || b.abbreviation === 'gen');
+    console.log('Genesis book found:', genesisBook);
+    if (genesisBook) {
+      this.selectedBook.set(genesisBook.abbreviation);
+      this.selectedBookName.set(genesisBook.name);
+      this.loadVerses();
+    } else {
+      const firstBook = this.books()[0];
+      if (firstBook) {
+        this.selectedBook.set(firstBook.abbreviation);
+        this.selectedBookName.set(firstBook.name);
+        this.loadVerses();
+      }
+    }
   }
 
   onTranslationChange(event: Event): void {
@@ -137,10 +156,8 @@ export class BibleViewerComponent implements OnInit {
   }
 
   nextChapter(): void {
-    const book = this.books().find(
-      (b) => b.abbreviation === this.selectedBook()
-    );
-    if (book && this.selectedChapter() < book.chapters) {
+    const maxChapter = this.chapters().length;
+    if (this.selectedChapter() < maxChapter) {
       this.selectedChapter.update((ch) => ch + 1);
       this.loadVerses();
     }

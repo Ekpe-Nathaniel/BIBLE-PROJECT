@@ -2,26 +2,26 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 24px;
+  padding: 12px 35px;
   border-bottom: 1px solid #e5e5e5;
   background-color: #ffffff;
-  gap: 24px;
+  gap: 12px;
   height: 64px;
 }
 
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 60px;
 }
 
 .logo {
-  height: 32px;
+  height: 45px;
   width: auto;
 }
 
 .nav-link {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 500;
   color: #1a1a1a;
   text-decoration: none;
@@ -84,11 +84,11 @@
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
 }
 
 .get-app {
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 500;
   color: #1a1a1a;
   text-decoration: none;
@@ -112,8 +112,9 @@
   justify-content: center;
   gap: 12px;
   transition: color 0.2s ease;
-  width: 35px;
-  height: 35px;
+  width: 45px;
+  height: 45px;
+  font-size: 24px;
 }
 
 .icon-btn:hover {
@@ -124,8 +125,8 @@
   background-color: #1a1a1a;
   color: #ffffff;
   border-radius: 50%;
-  width: 35px;
-  height: 35px;
+  width: 32px;
+  height: 32px;
   padding: 0;
 }
 
