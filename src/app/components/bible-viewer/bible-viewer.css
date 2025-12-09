@@ -4,21 +4,23 @@
   min-height: 100vh;
   background: white;
   padding: 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Figtree', sans-serif;
 }
-
 .controls-section {
   display: flex;
   justify-content: center;
   margin-bottom: 10px;
-  padding: 20px 20px 5px 20px;
+  padding: 20px 225px 10px 225px;
 }
 
 .controls-wrapper {
   display: flex;
   gap: 40px;
   align-items: flex-end;
-  justify-content: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 40px;
+  box-sizing: border-box;
 }
 
 .left-control,
@@ -38,7 +40,7 @@
 }
 
 .dropdown {
-  padding: 12px 16px;
+  padding: 12px 32px 12px 16px;
   border: none;
   border-radius: 6px;
   font-size: 16px;
@@ -183,7 +185,7 @@
   margin-bottom: 20px;
   padding-bottom: 10px;
   position: sticky;
-  top: 0;
+  top: 75px;
   background: white;
   z-index: 10;
 }
@@ -257,11 +259,11 @@
 }
 
 .verses {
-  line-height: 1.8;
+  line-height: 2.2;
   color: #000;
   font-size: 16px;
   text-align: justify;
-  font-family: 'Georgia', 'Garamond', serif;
+  font-family: 'Figtree', sans-serif;
 }
 
 .verse-item {
@@ -279,7 +281,7 @@
 
 .verse-text {
   color: #000;
-  line-height: 1.8;
+  line-height: 2.5;
   display: inline;
 }
 

@@ -60,9 +60,6 @@
     <div class="verses-wrapper">
       <div class="verses-container">
         <div class="verse-content" *ngIf="verseContent()">
-          <div class="translation-info">
-            {{ verseContent().translation_name }}
-          </div>
           <div class="verses">
             <span *ngFor="let verse of verseContent().verses" class="verse-item">
               <sup class="verse-number">{{ verse.verse }}</sup><span class="verse-text">{{ verse.text }}</span>
