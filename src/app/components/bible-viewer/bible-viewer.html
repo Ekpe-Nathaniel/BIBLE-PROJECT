@@ -39,7 +39,7 @@
       <button class="clear-results" (click)="searchResults.set([])">Clear</button>
     </div>
     <ul class="results-list">
-      <li *ngFor="let r of searchResults()" class="result-row">
+      <li *ngFor="let r of searchResults()" class="result-row" (click)="goToResult(r)">
         <div class="result-meta">{{ r.bookName }} {{ r.chapter }}:{{ r.verse }}</div>
         <div class="result-text">{{ r.text }}</div>
       </li>
@@ -78,7 +78,7 @@
       <div class="verses-container">
         <div class="verse-content" *ngIf="verseContent()">
           <div class="verses">
-            <span *ngFor="let verse of verseContent().verses" class="verse-item">
+            <span *ngFor="let verse of verseContent().verses" class="verse-item" [id]="'verse-' + selectedBook() + '-' + selectedChapter() + '-' + verse.verse">
               <sup class="verse-number">{{ verse.verse }}</sup><span class="verse-text">{{ verse.text }}</span>
             </span>
           </div>

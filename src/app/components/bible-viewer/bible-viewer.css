@@ -428,3 +428,10 @@
     margin: 12px 20px;
   }
 }
+
+/* Highlight effect when navigating to a verse */
+.verse-item.highlight,
+.verse-item.highlighted {
+  background: linear-gradient(90deg, rgba(255,243,160,0.4), rgba(255,243,160,0.15));
+  transition: background 0.4s ease;
+}

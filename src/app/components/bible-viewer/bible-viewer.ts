@@ -20,6 +20,7 @@ export class BibleViewerComponent implements OnInit {
   private _searchNoticeTimer: any = null;
   // Holds verse search results across all books
   searchResults = signal<Array<{ bookAbbrev: string; bookName: string; chapter: number; verse: number; text: string }>>([]);
+  private _pendingScroll: { verse: number } | null = null;
 
   translations = signal<any[]>([]);
   books = signal<Book[]>([]);
@@ -306,6 +307,22 @@ export class BibleViewerComponent implements OnInit {
         (data: any) => {
           this.verseContent.set(data);
           this.loading.set(false);
+
+          // If there's a pending scroll target (from search result click), scroll to it
+          if (this._pendingScroll) {
+            const verseNum = this._pendingScroll.verse;
+            // wait a tick for DOM to render
+            setTimeout(() => {
+              const id = 'verse-' + this.selectedBook() + '-' + this.selectedChapter() + '-' + verseNum;
+              const el = document.getElementById(id);
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.classList.add('highlight');
+                setTimeout(() => el.classList.remove('highlight'), 3000);
+              }
+            }, 60);
+            this._pendingScroll = null;
+          }
         },
         (error) => {
           this.error.set('Failed to load verses');
@@ -313,6 +330,22 @@ export class BibleViewerComponent implements OnInit {
           this.loading.set(false);
         }
       );
+  }
+
+  /** Navigate to a specific search result's book/chapter/verse and scroll to verse */
+  goToResult(r: { bookAbbrev: string; bookName: string; chapter: number; verse: number; text: string }) {
+    if (!r) return;
+    // Clear results UI
+    this.searchResults.set([]);
+
+    // Set selection and set pending scroll to the verse number
+    this.selectedBook.set(r.bookAbbrev);
+    this.selectedBookName.set(r.bookName);
+    this.selectedChapter.set(r.chapter);
+    this._pendingScroll = { verse: r.verse };
+
+    // Load verses for that chapter; loadVerses will perform scroll when ready
+    this.loadVerses();
   }
 
   previousChapter(): void {
