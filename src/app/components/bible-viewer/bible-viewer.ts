@@ -1,7 +1,8 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BibleService, Book } from '../../services/bible.service';
+import { SearchService } from '../../services/search.service';
 
 @Component({
   selector: 'app-bible-viewer',
@@ -12,6 +13,7 @@ import { BibleService, Book } from '../../services/bible.service';
 })
 export class BibleViewerComponent implements OnInit {
   private bibleService = inject(BibleService);
+  private searchService = inject(SearchService);
 
   translations = signal<any[]>([]);
   books = signal<Book[]>([]);
@@ -25,6 +27,15 @@ export class BibleViewerComponent implements OnInit {
   selectedBookName = signal('');
   selectedChapter = signal(1);
   showChapterDialog = signal(false);
+
+  constructor() {
+    effect(() => {
+      const selectedBook = this.searchService.selectedBook();
+      if (selectedBook) {
+        this.selectBookFromSearch(selectedBook);
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.loadTranslations();
@@ -116,6 +127,29 @@ export class BibleViewerComponent implements OnInit {
         );
       }
     }
+  }
+
+  selectBookFromSearch(book: Book): void {
+    this.selectedBook.set(book.abbreviation);
+    this.selectedBookName.set(book.name);
+    this.loading.set(true);
+    this.bibleService.getChapters(this.selectedTranslation(), book.abbreviation).subscribe(
+      (numChapters: number) => {
+        const chaptersArray = Array.from(
+          { length: numChapters },
+          (_, i) => i + 1
+        );
+        this.chapters.set(chaptersArray);
+        this.selectedChapter.set(1);
+        this.loadVerses();
+        this.loading.set(false);
+      },
+      (error) => {
+        this.error.set('Failed to load chapters');
+        console.error(error);
+        this.loading.set(false);
+      }
+    );
   }
 
   onChapterSelect(): void {
