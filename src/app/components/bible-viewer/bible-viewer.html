@@ -53,11 +53,11 @@
       <h1>{{ selectedBookName() }} {{ selectedChapter() }}</h1>
     </div>
 
-    <div class="verses-wrapper">
-      <button class="nav-arrow left-arrow" (click)="previousChapter()">
-        &lt;
-      </button>
+    <button class="nav-arrow left-arrow" (click)="previousChapter()">
+      &lt;
+    </button>
 
+    <div class="verses-wrapper">
       <div class="verses-container">
         <div class="verse-content" *ngIf="verseContent()">
           <div class="translation-info">
@@ -82,10 +82,10 @@
           <p>{{ error() }}</p>
         </div>
       </div>
-
-      <button class="nav-arrow right-arrow" (click)="nextChapter()">
-        &gt;
-      </button>
     </div>
+
+    <button class="nav-arrow right-arrow" (click)="nextChapter()">
+      &gt;
+    </button>
   </div>
 </div>
