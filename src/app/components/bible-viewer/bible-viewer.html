@@ -1,0 +1,88 @@
+<div class="bible-container">
+  <div class="controls-section">
+    <div class="controls-wrapper">
+      <div class="left-control">
+        <select
+          [value]="selectedBook()"
+          (change)="onBookSelect($event)"
+          class="dropdown book-dropdown"
+        >
+          <option value="">Select a book...</option>
+          <option *ngFor="let book of books()" [value]="book.abbreviation">
+            {{ book.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="right-control">
+        <select
+          [value]="selectedTranslation()"
+          (change)="onTranslationChange($event)"
+          class="dropdown translation-dropdown"
+        >
+          <option value="" disabled>Select a translation...</option>
+          <option *ngFor="let trans of translations()" [value]="trans.identifier">
+            {{ trans.name }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="chapter-dialog-overlay" *ngIf="showChapterDialog()">
+    <div class="chapter-dialog">
+      <div class="dialog-header">
+        <h2>Select Chapter</h2>
+        <button class="close-btn" (click)="closeChapterDialog()">×</button>
+      </div>
+      <div class="chapters-grid">
+        <button
+          *ngFor="let ch of chapters()"
+          (click)="selectedChapter.set(ch); onChapterSelect()"
+          [class.active]="selectedChapter() === ch"
+          class="chapter-btn"
+        >
+          {{ ch }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-section" *ngIf="selectedBook()">
+    <div class="header">
+      <h1>{{ selectedBookName() }} {{ selectedChapter() }}</h1>
+    </div>
+
+    <button class="nav-arrow left-arrow" (click)="previousChapter()">
+      <i class="ph ph-caret-left"></i>
+    </button>
+
+    <div class="verses-wrapper">
+      <div class="verses-container">
+        <div class="verse-content" *ngIf="verseContent()">
+          <div class="verses">
+            <span *ngFor="let verse of verseContent().verses" class="verse-item">
+              <sup class="verse-number">{{ verse.verse }}</sup><span class="verse-text">{{ verse.text }}</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="!verseContent() && !loading()">
+          <p>Select a book and chapter to view content</p>
+        </div>
+
+        <div class="loading" *ngIf="loading()">
+          <p>Loading...</p>
+        </div>
+
+        <div class="error" *ngIf="error()">
+          <p>{{ error() }}</p>
+        </div>
+      </div>
+    </div>
+
+    <button class="nav-arrow right-arrow" (click)="nextChapter()">
+      <i class="ph ph-caret-right"></i>
+    </button>
+  </div>
+</div>

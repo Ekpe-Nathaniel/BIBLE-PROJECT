@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { NavBar } from './nav-bar/nav-bar';
+import { BibleViewerComponent } from './components/bible-viewer/bible-viewer';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [NavBar, BibleViewerComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
