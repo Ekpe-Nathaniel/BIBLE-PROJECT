@@ -22,6 +22,7 @@ export class BibleViewerComponent implements OnInit {
 
   selectedTranslation = signal('kjv');
   selectedBook = signal('');
+  selectedBookName = signal('');
   selectedChapter = signal(1);
   showChapterDialog = signal(false);
 
@@ -62,6 +63,7 @@ export class BibleViewerComponent implements OnInit {
     this.selectedTranslation.set(target.value);
     this.loadBooks();
     this.selectedBook.set('');
+    this.selectedBookName.set('');
     this.selectedChapter.set(1);
     this.verseContent.set(null);
     this.chapters.set([]);
@@ -71,25 +73,29 @@ export class BibleViewerComponent implements OnInit {
     const target = event.target as HTMLSelectElement;
     const bookValue = target.value;
     if (bookValue) {
-      this.selectedBook.set(bookValue);
-      this.loading.set(true);
-      this.bibleService.getChapters(this.selectedTranslation(), bookValue).subscribe(
-        (numChapters: number) => {
-          const chaptersArray = Array.from(
-            { length: numChapters },
-            (_, i) => i + 1
-          );
-          this.chapters.set(chaptersArray);
-          this.selectedChapter.set(1);
-          this.showChapterDialog.set(true);
-          this.loading.set(false);
-        },
-        (error) => {
-          this.error.set('Failed to load chapters');
-          console.error(error);
-          this.loading.set(false);
-        }
-      );
+      const book = this.books().find((b) => b.abbreviation === bookValue);
+      if (book) {
+        this.selectedBook.set(bookValue);
+        this.selectedBookName.set(book.name);
+        this.loading.set(true);
+        this.bibleService.getChapters(this.selectedTranslation(), bookValue).subscribe(
+          (numChapters: number) => {
+            const chaptersArray = Array.from(
+              { length: numChapters },
+              (_, i) => i + 1
+            );
+            this.chapters.set(chaptersArray);
+            this.selectedChapter.set(1);
+            this.showChapterDialog.set(true);
+            this.loading.set(false);
+          },
+          (error) => {
+            this.error.set('Failed to load chapters');
+            console.error(error);
+            this.loading.set(false);
+          }
+        );
+      }
     }
   }
 
