@@ -29,6 +29,10 @@
     </div>
   </div>
 
+  <div class="search-notice" *ngIf="searchMessage()">
+    <p>{{ searchMessage() }}</p>
+  </div>
+
   <div class="chapter-dialog-overlay" *ngIf="showChapterDialog()">
     <div class="chapter-dialog">
       <div class="dialog-header">

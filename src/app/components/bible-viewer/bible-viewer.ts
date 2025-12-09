@@ -1,7 +1,9 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BibleService, Book } from '../../services/bible.service';
+import { SearchService, SearchEvent } from '../../services/search.service';
 
 @Component({
   selector: 'app-bible-viewer',
@@ -12,6 +14,10 @@ import { BibleService, Book } from '../../services/bible.service';
 })
 export class BibleViewerComponent implements OnInit {
   private bibleService = inject(BibleService);
+  private searchService = inject(SearchService);
+  private searchSub: Subscription | null = null;
+  searchMessage = signal<string | null>(null);
+  private _searchNoticeTimer: any = null;
 
   translations = signal<any[]>([]);
   books = signal<Book[]>([]);
@@ -29,6 +35,62 @@ export class BibleViewerComponent implements OnInit {
   ngOnInit(): void {
     this.loadTranslations();
     this.loadBooks();
+    // Subscribe to search events emitted by the NavBar (via SearchService)
+    this.searchSub = this.searchService.search$.subscribe((ev: SearchEvent) => {
+      this.handleSearchEvent(ev);
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.searchSub) {
+      this.searchSub.unsubscribe();
+      this.searchSub = null;
+    }
+    if (this._searchNoticeTimer) {
+      clearTimeout(this._searchNoticeTimer);
+      this._searchNoticeTimer = null;
+    }
+  }
+
+  private handleSearchEvent(ev: SearchEvent) {
+    if (!ev || !ev.term) {
+      return;
+    }
+
+    const term = ev.term.trim().toLowerCase();
+    if (!term) return;
+
+    // Try exact match by name first
+    const exact = this.books().find(b => b.name.toLowerCase() === term || b.abbreviation.toLowerCase() === term);
+    let bookMatch = exact;
+
+    // If no exact match, try partial includes (first match)
+    if (!bookMatch) {
+      bookMatch = this.books().find(b => b.name.toLowerCase().includes(term));
+    }
+
+    if (bookMatch) {
+      this.selectedBook.set(bookMatch.abbreviation);
+      this.selectedBookName.set(bookMatch.name);
+      this.selectedChapter.set(1);
+      this.loadVerses();
+      // clear any previous search message
+      this.searchMessage.set(null);
+    } else {
+      console.warn('Search term did not match any book:', ev.term);
+      // show a small UI notice for the user
+      this.searchMessage.set(`No book found for "${ev.term}"`);
+
+      // clear any previous timer
+      if (this._searchNoticeTimer) {
+        clearTimeout(this._searchNoticeTimer);
+      }
+      // auto-clear message after 4 seconds
+      this._searchNoticeTimer = setTimeout(() => {
+        this.searchMessage.set(null);
+        this._searchNoticeTimer = null;
+      }, 4000);
+    }
   }
 
   loadTranslations(): void {
