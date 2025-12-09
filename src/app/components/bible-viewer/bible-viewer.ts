@@ -18,6 +18,8 @@ export class BibleViewerComponent implements OnInit {
   private searchSub: Subscription | null = null;
   searchMessage = signal<string | null>(null);
   private _searchNoticeTimer: any = null;
+  // Holds verse search results across all books
+  searchResults = signal<Array<{ bookAbbrev: string; bookName: string; chapter: number; verse: number; text: string }>>([]);
 
   translations = signal<any[]>([]);
   books = signal<Book[]>([]);
@@ -110,38 +112,49 @@ export class BibleViewerComponent implements OnInit {
     this.loading.set(true);
     this.searchMessage.set(`Searching for "${term}" across all books...`);
 
+    // Clear previous results
+    this.searchResults.set([]);
+
     // Search all books and chapters for the term
     const allBooks = this.books();
     let totalMatches = 0;
     let firstMatchBook: string | null = null;
     let firstMatchChapter: number | null = null;
+    const matchedAll: Array<{ bookAbbrev: string; bookName: string; chapter: number; verse: number; text: string }> = [];
 
     const searchPromises = allBooks.map(book =>
-      new Promise<{ book: string; chapter: number; verses: any[] }>((resolve) => {
+      new Promise<void>((resolve) => {
         // Search first 3 chapters of each book for quick results
         const chaptersToSearch = Math.min(3, 10); // limit search depth
-        let matchesInBook: { chapter: number; verses: any[] }[] = [];
 
         const searchChapter = (chapterNum: number) => {
           if (chapterNum > chaptersToSearch) {
-            resolve({ book: book.name, chapter: 0, verses: matchesInBook.length > 0 ? matchesInBook[0].verses : [] });
+            resolve();
             return;
           }
 
           this.bibleService.getVerses(this.selectedTranslation(), book.abbreviation, chapterNum).subscribe(
             (data: any) => {
-              const matched = data.verses.filter((v: any) =>
-                v.text.toLowerCase().includes(term)
-              );
+              const matched = data.verses.filter((v: any) => v.text.toLowerCase().includes(term));
 
               if (matched.length > 0) {
-                matchesInBook.push({ chapter: chapterNum, verses: matched });
                 totalMatches += matched.length;
 
                 if (!firstMatchBook) {
                   firstMatchBook = book.abbreviation;
                   firstMatchChapter = chapterNum;
                 }
+
+                // push each matched verse into the master array
+                matched.forEach((v: any) => {
+                  matchedAll.push({
+                    bookAbbrev: book.abbreviation,
+                    bookName: book.name,
+                    chapter: chapterNum,
+                    verse: v.verse,
+                    text: v.text
+                  });
+                });
               }
 
               searchChapter(chapterNum + 1);
@@ -157,15 +170,20 @@ export class BibleViewerComponent implements OnInit {
     Promise.all(searchPromises).then(() => {
       this.loading.set(false);
 
-      if (totalMatches > 0 && firstMatchBook && firstMatchChapter) {
-        // Navigate to first match
-        this.selectedBook.set(firstMatchBook);
-        const matchedBook = this.books().find(b => b.abbreviation === firstMatchBook);
-        if (matchedBook) {
-          this.selectedBookName.set(matchedBook.name);
+      if (matchedAll.length > 0) {
+        // set collected matches into the signal so template can render them
+        this.searchResults.set(matchedAll);
+
+        // Optionally navigate to first match for context
+        if (firstMatchBook && firstMatchChapter) {
+          this.selectedBook.set(firstMatchBook);
+          const matchedBook = this.books().find(b => b.abbreviation === firstMatchBook);
+          if (matchedBook) {
+            this.selectedBookName.set(matchedBook.name);
+          }
+          this.selectedChapter.set(firstMatchChapter);
+          this.loadVerses();
         }
-        this.selectedChapter.set(firstMatchChapter);
-        this.loadVerses();
 
         this.searchMessage.set(`Found ${totalMatches} verse(s) with "${term}"`);
       } else {

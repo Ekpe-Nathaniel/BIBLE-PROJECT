@@ -33,6 +33,19 @@
     <p>{{ searchMessage() }}</p>
   </div>
 
+  <div class="search-results-all" *ngIf="searchResults().length > 0">
+    <div class="results-header">
+      <h2>Search Results</h2>
+      <button class="clear-results" (click)="searchResults.set([])">Clear</button>
+    </div>
+    <ul class="results-list">
+      <li *ngFor="let r of searchResults()" class="result-row">
+        <div class="result-meta">{{ r.bookName }} {{ r.chapter }}:{{ r.verse }}</div>
+        <div class="result-text">{{ r.text }}</div>
+      </li>
+    </ul>
+  </div>
+
   <div class="chapter-dialog-overlay" *ngIf="showChapterDialog()">
     <div class="chapter-dialog">
       <div class="dialog-header">
