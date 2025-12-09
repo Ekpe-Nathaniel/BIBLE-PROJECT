@@ -2,16 +2,9 @@
   <div class="controls-section">
     <div class="controls-wrapper">
       <div class="left-control">
-        <select
-          [value]="selectedBook()"
-          (change)="onBookSelect($event)"
-          class="dropdown book-dropdown"
-        >
-          <option value="">Select a book...</option>
-          <option *ngFor="let book of books()" [value]="book.abbreviation">
-            {{ book.name }}
-          </option>
-        </select>
+        <button (click)="openBooksDialog()" class="book-btn">
+          {{ selectedBook() ? selectedBook() + ' ' + selectedChapter() : 'Select Book' }}
+        </button>
       </div>
 
       <div class="right-control">
@@ -29,22 +22,74 @@
     </div>
   </div>
 
+  <div class="books-dialog-overlay" *ngIf="showBooksDialog()">
+    <div class="books-dialog-container">
+      <!-- Books Panel -->
+      <div class="books-panel single-panel">
+        <div class="panel-header">
+          <span>Select Book</span>
+        </div>
+
+        <div class="panel-content">
+          <!-- Old Testament -->
+          <div class="testament-section">
+            <div class="books-grid">
+              <button
+                *ngFor="let book of booksData['Old Testament']"
+                (click)="handleBookSelect(book)"
+                class="book-button"
+                [class.active]="selectedBookName() === book.name"
+              >
+                {{ book.abbr }}
+              </button>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- New Testament -->
+            <div class="books-grid">
+              <button
+                *ngFor="let book of booksData['New Testament']"
+                (click)="handleBookSelect(book)"
+                class="book-button"
+                [class.active]="selectedBookName() === book.name"
+              >
+                {{ book.abbr }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Close Button -->
+      <button class="close-dialog-btn" (click)="closeBooksDialog()">×</button>
+    </div>
+  </div>
+
   <div class="chapter-dialog-overlay" *ngIf="showChapterDialog()">
-    <div class="chapter-dialog">
-      <div class="dialog-header">
-        <h2>Select Chapter</h2>
-        <button class="close-btn" (click)="closeChapterDialog()">×</button>
+    <div class="chapter-dialog-container">
+      <!-- Chapters Panel -->
+      <div class="chapters-panel single-panel">
+        <div class="panel-header">
+          <span>Select Chapter</span>
+        </div>
+
+        <div class="panel-content">
+          <div class="chapters-grid">
+            <button
+              *ngFor="let ch of chapters()"
+              (click)="selectedChapter.set(ch); onChapterSelect()"
+              [class.active]="selectedChapter() === ch"
+              class="chapter-btn"
+            >
+              {{ ch }}
+            </button>
+          </div>
+        </div>
       </div>
-      <div class="chapters-grid">
-        <button
-          *ngFor="let ch of chapters()"
-          (click)="selectedChapter.set(ch); onChapterSelect()"
-          [class.active]="selectedChapter() === ch"
-          class="chapter-btn"
-        >
-          {{ ch }}
-        </button>
-      </div>
+
+      <!-- Close Button -->
+      <button class="close-dialog-btn" (click)="closeChapterDialog()">×</button>
     </div>
   </div>
 

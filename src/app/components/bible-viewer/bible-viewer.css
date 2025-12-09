@@ -50,6 +50,28 @@
   width: 220px;
 }
 
+.book-btn {
+  padding: 12px 32px 12px 16px;
+  border: 1px solid black;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: black;
+  background-color: white;
+  width: 220px;
+}
+
+.book-btn:hover {
+  background-color: #2a2a2a;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.book-btn:focus {
+  outline: none;
+}
+
 .book-dropdown {
   background-color: white;
   color: black;
@@ -97,71 +119,43 @@
   z-index: 1000;
 }
 
-.chapter-dialog {
+.chapter-dialog-container {
   background: white;
-  border-radius: 12px;
-  padding: 30px;
-  max-width: 600px;
-  width: 90%;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.dialog-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.dialog-header h2 {
-  margin: 0;
-  color: #000;
-  font-size: 24px;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 32px;
-  color: #666;
-  cursor: pointer;
+  border-radius: 16px;
   padding: 0;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.3s ease;
-}
-
-.close-btn:hover {
-  color: #000;
+  width: 350px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+  margin: 0 20px;
 }
 
 .chapters-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
 }
 
 .chapter-btn {
-  padding: 12px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
+  padding: 10px 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
   background-color: white;
   cursor: pointer;
   font-weight: 600;
   color: #000;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 12px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chapter-btn:hover {
-  border-color: #000;
-  color: #000;
   background-color: #f5f5f5;
+  border-color: #000;
 }
 
 .chapter-btn.active {
@@ -259,10 +253,10 @@
 }
 
 .verses {
-  line-height: 2.2;
+  line-height: 34px;
   color: #000;
   font-size: 16px;
-  text-align: justify;
+  text-align: left;
   font-family: 'Figtree', sans-serif;
 }
 
@@ -312,6 +306,147 @@
   font-size: 18px;
 }
 
+.books-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.books-dialog-container {
+  background: white;
+  border-radius: 16px;
+  padding: 0;
+  width: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+  margin: 0 20px;
+}
+
+.flex {
+  display: flex;
+}
+
+.gap-6 {
+  gap: 24px;
+}
+
+.books-panel,
+.chapters-panel {
+  flex: 1;
+  background: white;
+  border-radius: 0;
+  overflow: hidden;
+  border: none;
+}
+
+.books-panel.single-panel,
+.chapters-panel.single-panel {
+  flex: none;
+  width: 100%;
+  height: 100%;
+}
+
+.panel-header {
+  background: #000;
+  color: white;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  border-radius: 16px 16px 0 0;
+}
+
+.chevron {
+  display: inline-block;
+  transform: rotate(180deg);
+}
+
+.panel-content {
+  padding: 24px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.testament-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.divider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 10px 0;
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.book-button {
+  padding: 10px 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: white;
+  color: #000;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.book-button:hover {
+  background-color: #f5f5f5;
+  border-color: #000;
+}
+
+.book-button.active {
+  background-color: #000;
+  color: white;
+  border-color: #000;
+}
+
+
+
+.close-dialog-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+  z-index: 10;
+}
+
+.close-dialog-btn:hover {
+  color: #ccc;
+}
+
 @media (max-width: 768px) {
   .controls-wrapper {
     flex-direction: column;
@@ -340,5 +475,28 @@
 
   .header h1 {
     font-size: 24px;
+  }
+
+  .books-dialog-container {
+    max-width: 95%;
+    max-height: 90vh;
+  }
+
+  .books-dialog-container .flex {
+    flex-direction: column;
+  }
+
+  .books-panel,
+  .chapters-panel {
+    max-width: 100%;
+  }
+
+  .books-grid,
+  .chapters-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .panel-content {
+    max-height: 400px;
   }
 }
