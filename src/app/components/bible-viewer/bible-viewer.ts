@@ -71,19 +71,25 @@ export class BibleViewerComponent implements OnInit {
     const target = event.target as HTMLSelectElement;
     const bookValue = target.value;
     if (bookValue) {
-      const book = this.books().find(
-        (b) => b.abbreviation === bookValue
+      this.selectedBook.set(bookValue);
+      this.loading.set(true);
+      this.bibleService.getChapters(this.selectedTranslation(), bookValue).subscribe(
+        (numChapters: number) => {
+          const chaptersArray = Array.from(
+            { length: numChapters },
+            (_, i) => i + 1
+          );
+          this.chapters.set(chaptersArray);
+          this.selectedChapter.set(1);
+          this.showChapterDialog.set(true);
+          this.loading.set(false);
+        },
+        (error) => {
+          this.error.set('Failed to load chapters');
+          console.error(error);
+          this.loading.set(false);
+        }
       );
-      if (book) {
-        this.selectedBook.set(bookValue);
-        const chaptersArray = Array.from(
-          { length: book.chapters },
-          (_, i) => i + 1
-        );
-        this.chapters.set(chaptersArray);
-        this.selectedChapter.set(1);
-        this.showChapterDialog.set(true);
-      }
     }
   }
 

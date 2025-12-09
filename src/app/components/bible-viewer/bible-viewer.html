@@ -2,7 +2,6 @@
   <div class="controls-section">
     <div class="controls-wrapper">
       <div class="left-control">
-        <label>Book</label>
         <select
           [value]="selectedBook()"
           (change)="onBookSelect($event)"
@@ -16,13 +15,13 @@
       </div>
 
       <div class="right-control">
-        <label>Translation</label>
         <select
           [value]="selectedTranslation()"
           (change)="onTranslationChange($event)"
           class="dropdown translation-dropdown"
         >
-          <option *ngFor="let trans of translations()" [value]="trans.id">
+          <option value="" disabled>Select a translation...</option>
+          <option *ngFor="let trans of translations()" [value]="trans.identifier">
             {{ trans.name }}
           </option>
         </select>
@@ -51,37 +50,42 @@
 
   <div class="content-section" *ngIf="selectedBook()">
     <div class="header">
-      <button class="nav-arrow left-arrow" (click)="previousChapter()">
-        ‹
-      </button>
       <h1>{{ selectedBook() }} {{ selectedChapter() }}</h1>
-      <button class="nav-arrow right-arrow" (click)="nextChapter()">
-        ›
-      </button>
     </div>
 
-    <div class="verse-content" *ngIf="verseContent()">
-      <div class="translation-info">
-        {{ verseContent().translation_name }}
-      </div>
-      <div class="verses">
-        <div *ngFor="let verse of verseContent().verses" class="verse-item">
-          <span class="verse-number">{{ verse.verse }}</span>
-          <span class="verse-text">{{ verse.text }}</span>
+    <div class="verses-wrapper">
+      <button class="nav-arrow left-arrow" (click)="previousChapter()">
+        &lt;
+      </button>
+
+      <div class="verses-container">
+        <div class="verse-content" *ngIf="verseContent()">
+          <div class="translation-info">
+            {{ verseContent().translation_name }}
+          </div>
+          <div class="verses">
+            <span *ngFor="let verse of verseContent().verses" class="verse-item">
+              <sup class="verse-number">{{ verse.verse }}</sup><span class="verse-text">{{ verse.text }}</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="!verseContent() && !loading()">
+          <p>Select a book and chapter to view content</p>
+        </div>
+
+        <div class="loading" *ngIf="loading()">
+          <p>Loading...</p>
+        </div>
+
+        <div class="error" *ngIf="error()">
+          <p>{{ error() }}</p>
         </div>
       </div>
-    </div>
 
-    <div class="empty-state" *ngIf="!verseContent() && !loading()">
-      <p>Select a book and chapter to view content</p>
-    </div>
-
-    <div class="loading" *ngIf="loading()">
-      <p>Loading...</p>
-    </div>
-
-    <div class="error" *ngIf="error()">
-      <p>{{ error() }}</p>
+      <button class="nav-arrow right-arrow" (click)="nextChapter()">
+        &gt;
+      </button>
     </div>
   </div>
 </div>

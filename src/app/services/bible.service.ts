@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 export interface Book {
   abbreviation: string;
@@ -9,14 +9,19 @@ export interface Book {
 }
 
 export interface Translation {
-  id: string;
+  identifier: string;
   name: string;
   language: string;
 }
 
-export interface Verse {
+export interface VerseContent {
   bookName: string;
   chapter: number;
+  translation_name: string;
+  verses: Verse[];
+}
+
+export interface Verse {
   verse: number;
   text: string;
 }
@@ -28,19 +33,45 @@ export class BibleService {
   private httpClient = inject(HttpClient);
   private apiUrl = 'https://bible-api.com';
 
-  getTranslations(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}/translations`);
+  getTranslations(): Observable<Translation[]> {
+    return this.httpClient.get<any>(`${this.apiUrl}/data`).pipe(
+      map(response => response.translations)
+    );
   }
 
   getBooks(translation: string): Observable<Book[]> {
-    return this.httpClient.get<Book[]>(`${this.apiUrl}/${translation}/books`);
+    return this.httpClient.get<any>(`${this.apiUrl}/data/${translation}`).pipe(
+      map(response =>
+        response.books.map((book: any) => ({
+          abbreviation: book.id,
+          name: book.name,
+          chapters: 0
+        }))
+      )
+    );
   }
 
-  getChapters(translation: string, book: string): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}/${translation}/${book}`);
+  getChapters(translation: string, book: string): Observable<number> {
+    return this.httpClient.get<any>(
+      `${this.apiUrl}/data/${translation}/${book}`
+    ).pipe(
+      map(response => response.chapters.length)
+    );
   }
 
-  getVerses(translation: string, book: string, chapter: number): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}/${book}/${chapter}?translation=${translation}`);
+  getVerses(translation: string, book: string, chapter: number): Observable<VerseContent> {
+    return this.httpClient.get<any>(
+      `${this.apiUrl}/data/${translation}/${book}/${chapter}`
+    ).pipe(
+      map(response => ({
+        bookName: response.verses[0].book,
+        chapter: chapter,
+        translation_name: response.translation.name,
+        verses: response.verses.map((v: any) => ({
+          verse: v.verse,
+          text: v.text
+        }))
+      }))
+    );
   }
 }
