@@ -76,6 +76,9 @@ export class BibleViewerComponent implements OnInit {
       this.loadVerses();
       // clear any previous search message
       this.searchMessage.set(null);
+    } else if (ev.isVerseSearch) {
+      // No book match, perform verse search across all books
+      this.searchVersesAcrossBooks(term);
     } else {
       console.warn('Search term did not match any book:', ev.term);
       // show a small UI notice for the user
@@ -91,6 +94,90 @@ export class BibleViewerComponent implements OnInit {
         this._searchNoticeTimer = null;
       }, 4000);
     }
+  }
+
+  private searchVersesAcrossBooks(term: string) {
+    if (!this.selectedTranslation()) {
+      this.searchMessage.set('Please select a translation first');
+      if (this._searchNoticeTimer) clearTimeout(this._searchNoticeTimer);
+      this._searchNoticeTimer = setTimeout(() => {
+        this.searchMessage.set(null);
+        this._searchNoticeTimer = null;
+      }, 4000);
+      return;
+    }
+
+    this.loading.set(true);
+    this.searchMessage.set(`Searching for "${term}" across all books...`);
+
+    // Search all books and chapters for the term
+    const allBooks = this.books();
+    let totalMatches = 0;
+    let firstMatchBook: string | null = null;
+    let firstMatchChapter: number | null = null;
+
+    const searchPromises = allBooks.map(book =>
+      new Promise<{ book: string; chapter: number; verses: any[] }>((resolve) => {
+        // Search first 3 chapters of each book for quick results
+        const chaptersToSearch = Math.min(3, 10); // limit search depth
+        let matchesInBook: { chapter: number; verses: any[] }[] = [];
+
+        const searchChapter = (chapterNum: number) => {
+          if (chapterNum > chaptersToSearch) {
+            resolve({ book: book.name, chapter: 0, verses: matchesInBook.length > 0 ? matchesInBook[0].verses : [] });
+            return;
+          }
+
+          this.bibleService.getVerses(this.selectedTranslation(), book.abbreviation, chapterNum).subscribe(
+            (data: any) => {
+              const matched = data.verses.filter((v: any) =>
+                v.text.toLowerCase().includes(term)
+              );
+
+              if (matched.length > 0) {
+                matchesInBook.push({ chapter: chapterNum, verses: matched });
+                totalMatches += matched.length;
+
+                if (!firstMatchBook) {
+                  firstMatchBook = book.abbreviation;
+                  firstMatchChapter = chapterNum;
+                }
+              }
+
+              searchChapter(chapterNum + 1);
+            },
+            () => searchChapter(chapterNum + 1) // skip on error, continue searching
+          );
+        };
+
+        searchChapter(1);
+      })
+    );
+
+    Promise.all(searchPromises).then(() => {
+      this.loading.set(false);
+
+      if (totalMatches > 0 && firstMatchBook && firstMatchChapter) {
+        // Navigate to first match
+        this.selectedBook.set(firstMatchBook);
+        const matchedBook = this.books().find(b => b.abbreviation === firstMatchBook);
+        if (matchedBook) {
+          this.selectedBookName.set(matchedBook.name);
+        }
+        this.selectedChapter.set(firstMatchChapter);
+        this.loadVerses();
+
+        this.searchMessage.set(`Found ${totalMatches} verse(s) with "${term}"`);
+      } else {
+        this.searchMessage.set(`No verses found with "${term}"`);
+      }
+
+      if (this._searchNoticeTimer) clearTimeout(this._searchNoticeTimer);
+      this._searchNoticeTimer = setTimeout(() => {
+        this.searchMessage.set(null);
+        this._searchNoticeTimer = null;
+      }, 5000);
+    });
   }
 
   loadTranslations(): void {

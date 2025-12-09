@@ -53,11 +53,13 @@ export class NavBar implements OnInit {
       return;
     }
 
+    // Try exact book match first, otherwise treat as verse search
     const matchedBook = this.allBooks.find(b => b.toLowerCase() === term.toLowerCase()) || null;
 
     const detail = { term, book: matchedBook };
 
     // Emit through the SearchService for Angular consumers
+    // If no exact book match, this will trigger a verse search in the viewer
     this.searchService.emit(term, matchedBook);
 
     // Keep the existing CustomEvent for any non-Angular listeners

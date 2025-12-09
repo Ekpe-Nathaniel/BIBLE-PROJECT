@@ -5,6 +5,7 @@ export interface SearchEvent {
   term: string;
   book?: string | null;
   timestamp?: number;
+  isVerseSearch?: boolean;  // true if no book match was found; viewer should search verses
 }
 
 @Injectable({ providedIn: 'root' })
@@ -16,7 +17,12 @@ export class SearchService {
 
   /** Emit a search event */
   emit(term: string, book?: string | null) {
-    this.searchSubject.next({ term, book: book ?? null, timestamp: Date.now() });
+    this.searchSubject.next({
+      term,
+      book: book ?? null,
+      timestamp: Date.now(),
+      isVerseSearch: !book  // flag for verse search if no book match
+    });
   }
 
   /** Clear search (emits empty term) */
