@@ -83,6 +83,11 @@
   background-color: white;
   color: black;
   border: 1px solid black;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: none;
+  padding-right: 16px;
 }
 
 .dropdown:hover {
@@ -267,8 +272,8 @@
 
 .verse-number {
   color: #000;
-  font-weight: normal;
-  font-size: 0.75em;
+  font-weight: bold;
+  font-size: 0.85em;
   vertical-align: super;
   margin: 0 2px;
 }
@@ -276,7 +281,7 @@
 .verse-text {
   color: #000;
   line-height: 2.5;
-  display: inline;
+  display: contents;
 }
 
 .empty-state {
