@@ -3,21 +3,25 @@
     <div class="controls-wrapper">
       <div class="left-control">
         <button (click)="openBooksDialog()" class="book-btn">
-          {{ selectedBook() ? selectedBook() + ' ' + selectedChapter() : 'Select Book' }}
+          <span>{{ selectedBook() ? selectedBook() + ' ' + selectedChapter() : 'Select Book' }}</span>
+          <i class="ph ph-caret-down"></i>
         </button>
       </div>
 
       <div class="right-control">
-        <select
-          [value]="selectedTranslation()"
-          (change)="onTranslationChange($event)"
-          class="dropdown translation-dropdown"
-        >
-          <option value="" disabled>Select a translation...</option>
-          <option *ngFor="let trans of translations()" [value]="trans.identifier">
-            {{ trans.name }}
-          </option>
-        </select>
+        <div class="dropdown-wrapper">
+          <select
+            [value]="selectedTranslation()"
+            (change)="onTranslationChange($event)"
+            class="dropdown translation-dropdown"
+          >
+            <option value="" disabled>Select a translation...</option>
+            <option *ngFor="let trans of translations()" [value]="trans.identifier">
+              {{ trans.name }}
+            </option>
+          </select>
+          <i class="ph ph-caret-down dropdown-icon"></i>
+        </div>
       </div>
     </div>
   </div>
